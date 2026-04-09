@@ -1,0 +1,34 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Package manager and workspace artifacts
+.pnp
+.pnp.*
+.pnpm-store
+.yarn
+
+# Build outputs
+.next
+**/.next
+out
+dist
+build
+coverage
+
+# Python caches and virtual environments
+__pycache__
+.venv
+venv
+env
+ENV
+
+# Environment files
+.env
+.env.*
+
+# Editor and OS files
+.vscode
+.idea
+.DS_Store
+Thumbs.db

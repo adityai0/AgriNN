@@ -9,7 +9,7 @@
 [![Frontend: Next.js](https://img.shields.io/badge/Frontend-Next.js-000000?logo=next.js&logoColor=white)](#tech-stack)
 [![Backend: FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)](#tech-stack)
 [![AI/ML: PyTorch + YOLOv8](https://img.shields.io/badge/AI%2FML-PyTorch%20%2B%20YOLOv8-EE4C2C?logo=pytorch&logoColor=white)](#tech-stack)
-[![Database: MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white)](#tech-stack)
+[![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?logo=postgresql&logoColor=white)](#tech-stack)
 
 AgriNN is an AI-powered livestock classification system that uses computer vision to analyze images of cattle and buffaloes. It extracts body structure features such as body length, height, and key proportions, then generates standardized classification scores to support Animal Type Classification (ATC).
 
@@ -37,7 +37,7 @@ AgriNN automates ATC using an end-to-end AI pipeline. Users upload animal images
 - **Frontend:** Next.js, Tailwind CSS
 - **Backend:** FastAPI (Python)
 - **AI/ML:** PyTorch, YOLOv8, OpenCV
-- **Database:** MongoDB
+- **Database:** PostgreSQL
 
 ## System Architecture
 
@@ -51,7 +51,7 @@ AgriNN automates ATC using an end-to-end AI pipeline. Users upload animal images
 	v
 [FastAPI Backend]
 	|            \
-	|             \--> [MongoDB: records, metadata, scores]
+	|             \--> [PostgreSQL: records, metadata, scores]
 	v
 [Inference Pipeline: YOLOv8 + OpenCV + PyTorch]
 	|
@@ -68,7 +68,7 @@ AgriNN automates ATC using an end-to-end AI pipeline. Users upload animal images
 
 - Node.js 18+
 - Python 3.10+
-- MongoDB (local or cloud)
+- PostgreSQL (local or cloud)
 - Git
 
 ### 1. Clone the Repository
@@ -97,8 +97,7 @@ pip install -r requirements.txt
 Create a `.env` file in `backend/` with values similar to:
 
 ```env
-MONGODB_URI=mongodb://localhost:27017
-DATABASE_NAME=agrinn
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/agrinn
 MODEL_PATH=./models/yolov8.pt
 ```
 
