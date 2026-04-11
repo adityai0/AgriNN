@@ -1,6 +1,6 @@
-# Contributing to MorphoNN
+# Contributing to AgriNN
 
-Thank you for your interest in contributing to **MorphoNN**. We welcome contributors of all experience levels, including first-time open-source contributors.
+Thank you for your interest in contributing to **AgriNN**. We welcome contributors of all experience levels, including first-time open-source contributors.
 
 ## Welcome
 
