@@ -27,8 +27,8 @@ export function Header() {
               Log in
             </Button>
           </Link>
-          <Link href="/get-started">
-            <Button className="text-sm font-medium">Get Started</Button>
+          <Link href="/dashboard">
+            <Button className="text-sm font-medium">Go to Dashboard</Button>
           </Link>
         </div>
       </div>
