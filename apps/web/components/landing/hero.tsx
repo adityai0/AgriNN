@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export function Hero() {
   return (
@@ -11,7 +11,9 @@ export function Hero() {
               Livestock Classification Powered by AI Edge Vision
             </h1>
             <p className="mx-auto max-w-[800px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              AgriNN utilizes state-of-the-art computer vision algorithms, integrating YOLO26 and OpenCV, to deliver automated Animal Type Classification (ATC). Extract high-precision morphological traits for advanced dairy and breeding operations.
+              AgriNN utilizes state-of-the-art computer vision algorithms, integrating YOLO26 and
+              OpenCV, to deliver automated Animal Type Classification (ATC). Extract high-precision
+              morphological traits for advanced dairy and breeding operations.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">

@@ -1,4 +1,4 @@
-import { RecentTable } from "@/components/dashboard/recent-table";
+import { RecentTable } from '@/components/dashboard/recent-table';
 
 export default function RecordsPage() {
   return (
@@ -11,19 +11,19 @@ export default function RecordsPage() {
       </div>
 
       <div className="border bg-card p-4 flex gap-4">
-         <input 
-            type="text" 
-            placeholder="Search by ID or type..." 
-            className="flex-1 bg-background border px-3 py-2 text-sm"
-         />
-         <select className="bg-background border px-3 py-2 text-sm w-48">
-           <option>All Species</option>
-           <option>Cattle</option>
-           <option>Buffalo</option>
-         </select>
-         <button className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium border border-primary">
-           Filter
-         </button>
+        <input
+          type="text"
+          placeholder="Search by ID or type..."
+          className="flex-1 bg-background border px-3 py-2 text-sm"
+        />
+        <select className="bg-background border px-3 py-2 text-sm w-48">
+          <option>All Species</option>
+          <option>Cattle</option>
+          <option>Buffalo</option>
+        </select>
+        <button className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium border border-primary">
+          Filter
+        </button>
       </div>
 
       <RecentTable />

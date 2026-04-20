@@ -1,11 +1,10 @@
-import { CheckCircle2, Crosshair, Cpu } from "lucide-react";
-import { MetricsGrid } from "./metrics-grid";
+import { CheckCircle2, Crosshair, Cpu } from 'lucide-react';
+import { MetricsGrid } from './metrics-grid';
 
 export function AnalysisResult({ onReset }: { onReset: () => void }) {
   return (
     <div className="flex flex-col space-y-6">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        
         {/* Left: Image / Segmentation preview */}
         <div className="border bg-card flex flex-col">
           <div className="p-4 border-b flex items-center justify-between bg-muted/30">
@@ -16,15 +15,15 @@ export function AnalysisResult({ onReset }: { onReset: () => void }) {
             <span className="text-xs font-mono bg-background border px-2 py-1">YOLO26</span>
           </div>
           <div className="relative aspect-video bg-muted/50 flex items-center justify-center overflow-hidden p-6">
-             <div className="w-full h-full border-2 border-primary/50 bg-primary/5 relative flex items-center justify-center">
-                <span className="font-mono text-primary/50 font-bold text-xl tracking-widest">
-                  [ ANIMAL_MASK_RENDERED ]
-                </span>
-                <div className="absolute top-4 left-4 h-2 w-2 bg-primary" />
-                <div className="absolute top-4 right-4 h-2 w-2 bg-primary" />
-                <div className="absolute bottom-4 left-4 h-2 w-2 bg-primary" />
-                <div className="absolute bottom-4 right-4 h-2 w-2 bg-primary" />
-             </div>
+            <div className="w-full h-full border-2 border-primary/50 bg-primary/5 relative flex items-center justify-center">
+              <span className="font-mono text-primary/50 font-bold text-xl tracking-widest">
+                [ ANIMAL_MASK_RENDERED ]
+              </span>
+              <div className="absolute top-4 left-4 h-2 w-2 bg-primary" />
+              <div className="absolute top-4 right-4 h-2 w-2 bg-primary" />
+              <div className="absolute bottom-4 left-4 h-2 w-2 bg-primary" />
+              <div className="absolute bottom-4 right-4 h-2 w-2 bg-primary" />
+            </div>
           </div>
         </div>
 
@@ -41,7 +40,9 @@ export function AnalysisResult({ onReset }: { onReset: () => void }) {
               </div>
               <div className="flex flex-col items-end">
                 <span className="text-3xl font-bold text-primary font-mono">87</span>
-                <span className="text-xs text-muted-foreground font-semibold tracking-wider uppercase">ATC Score</span>
+                <span className="text-xs text-muted-foreground font-semibold tracking-wider uppercase">
+                  ATC Score
+                </span>
               </div>
             </div>
             <MetricsGrid />
@@ -68,16 +69,20 @@ export function AnalysisResult({ onReset }: { onReset: () => void }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Compute Node</span>
-                <span className="flex items-center gap-1"><Cpu className="h-3 w-3"/> Edge-TPU-01</span>
+                <span className="flex items-center gap-1">
+                  <Cpu className="h-3 w-3" /> Edge-TPU-01
+                </span>
               </div>
             </div>
           </div>
         </div>
-
       </div>
 
       <div className="flex justify-end gap-4 border-t pt-6">
-        <button onClick={onReset} className="px-4 py-2 text-sm font-medium border bg-background hover:bg-muted">
+        <button
+          onClick={onReset}
+          className="px-4 py-2 text-sm font-medium border bg-background hover:bg-muted"
+        >
           New Analysis
         </button>
         <button className="px-4 py-2 text-sm font-medium border border-primary bg-primary text-primary-foreground hover:bg-primary/90">

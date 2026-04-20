@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export function CTA() {
   return (
@@ -11,17 +11,25 @@ export function CTA() {
               Initiate Your Inference Pipeline
             </h2>
             <p className="text-background/80 md:text-lg leading-relaxed">
-              Deploy our open-source architecture locally or run it in the cloud. Integrate automated livestock classification into your infrastructure today.
+              Deploy our open-source architecture locally or run it in the cloud. Integrate
+              automated livestock classification into your infrastructure today.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/get-started">
-              <Button size="lg" className="w-full sm:w-auto font-medium bg-background text-foreground hover:bg-background/90">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto font-medium bg-background text-foreground hover:bg-background/90"
+              >
                 Get Started
               </Button>
             </Link>
             <Link href="https://github.com/adityai0/AgriNN" target="_blank" rel="noreferrer">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto font-medium border-background/20 hover:bg-background/10 hover:text-background text-background bg-transparent">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto font-medium border-background/20 hover:bg-background/10 hover:text-background text-background bg-transparent"
+              >
                 View on GitHub
               </Button>
             </Link>

@@ -1,13 +1,13 @@
-import Link from "next/link";
-import { LayoutDashboard, ScanLine, History, PieChart, Settings } from "lucide-react";
+import Link from 'next/link';
+import { LayoutDashboard, ScanLine, History, PieChart, Settings } from 'lucide-react';
 
 export function Sidebar() {
   const links = [
-    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Analyze", href: "/dashboard/analyze", icon: ScanLine },
-    { name: "Records", href: "/dashboard/records", icon: History },
-    { name: "Analytics", href: "/dashboard/analytics", icon: PieChart },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Analyze', href: '/dashboard/analyze', icon: ScanLine },
+    { name: 'Records', href: '/dashboard/records', icon: History },
+    { name: 'Analytics', href: '/dashboard/analytics', icon: PieChart },
+    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];
 
   return (

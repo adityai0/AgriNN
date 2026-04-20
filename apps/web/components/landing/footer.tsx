@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export function Footer() {
   return (
@@ -17,7 +17,12 @@ export function Footer() {
           <Link href="#features" className="hover:underline underline-offset-4">
             Features
           </Link>
-          <Link href="https://github.com/adityai0/AgriNN" target="_blank" rel="noreferrer" className="hover:underline underline-offset-4">
+          <Link
+            href="https://github.com/adityai0/AgriNN"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:underline underline-offset-4"
+          >
             GitHub
           </Link>
           <Link href="/get-started" className="hover:underline underline-offset-4">

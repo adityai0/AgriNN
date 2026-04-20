@@ -1,11 +1,11 @@
-import { Ruler, Maximize, GitCommit, FileDiff } from "lucide-react";
+import { Ruler, Maximize, GitCommit, FileDiff } from 'lucide-react';
 
 export function MetricsGrid() {
   const metrics = [
-    { label: "Body Width", value: "245 cm", icon: Ruler },
-    { label: "Body Height", value: "142 cm", icon: Maximize },
-    { label: "Contour Area", value: "3.2 m²", icon: FileDiff },
-    { label: "Anchor Points", value: "18 mapped", icon: GitCommit },
+    { label: 'Body Width', value: '245 cm', icon: Ruler },
+    { label: 'Body Height', value: '142 cm', icon: Maximize },
+    { label: 'Contour Area', value: '3.2 m²', icon: FileDiff },
+    { label: 'Anchor Points', value: '18 mapped', icon: GitCommit },
   ];
 
   return (

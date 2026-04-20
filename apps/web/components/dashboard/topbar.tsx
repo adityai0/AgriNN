@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { Bell, Search } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Bell, Search } from 'lucide-react';
 
 export function Topbar() {
   return (
     <header className="h-16 border-b bg-background flex items-center justify-between px-6 shrink-0">
       <div className="flex items-center gap-2 text-muted-foreground w-1/3">
         <Search className="h-4 w-4" />
-        <input 
-          type="text" 
-          placeholder="Search records or IDs..." 
+        <input
+          type="text"
+          placeholder="Search records or IDs..."
           className="bg-transparent border-none outline-none text-sm w-full font-medium"
         />
       </div>

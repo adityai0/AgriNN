@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export function Header() {
   return (
@@ -17,7 +17,10 @@ export function Header() {
           <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4">
             Features
           </Link>
-          <Link href="#use-cases" className="text-sm font-medium hover:underline underline-offset-4">
+          <Link
+            href="#use-cases"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
             Use Cases
           </Link>
         </nav>

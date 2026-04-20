@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { UploadZone } from "@/components/dashboard/upload-zone";
-import { AnalysisResult } from "@/components/dashboard/analysis-result";
-import { Loader2 } from "lucide-react";
+import { useState } from 'react';
+import { UploadZone } from '@/components/dashboard/upload-zone';
+import { AnalysisResult } from '@/components/dashboard/analysis-result';
+import { Loader2 } from 'lucide-react';
 
 export default function AnalyzePage() {
-  const [status, setStatus] = useState<"idle" | "analyzing" | "complete">("idle");
+  const [status, setStatus] = useState<'idle' | 'analyzing' | 'complete'>('idle');
 
   const handleAnalyze = () => {
-    setStatus("analyzing");
+    setStatus('analyzing');
     // Simulate AI inference delay
     setTimeout(() => {
-      setStatus("complete");
+      setStatus('complete');
     }, 2000);
   };
 
   const handleReset = () => {
-    setStatus("idle");
+    setStatus('idle');
   };
 
   return (
@@ -30,11 +30,9 @@ export default function AnalyzePage() {
       </div>
 
       <div className="mt-8">
-        {status === "idle" && (
-          <UploadZone onAnalyze={handleAnalyze} />
-        )}
+        {status === 'idle' && <UploadZone onAnalyze={handleAnalyze} />}
 
-        {status === "analyzing" && (
+        {status === 'analyzing' && (
           <div className="border bg-card p-24 flex flex-col items-center justify-center space-y-6 text-center">
             <Loader2 className="h-12 w-12 text-primary animate-spin" />
             <div className="space-y-2">
@@ -46,9 +44,7 @@ export default function AnalyzePage() {
           </div>
         )}
 
-        {status === "complete" && (
-          <AnalysisResult onReset={handleReset} />
-        )}
+        {status === 'complete' && <AnalysisResult onReset={handleReset} />}
       </div>
     </div>
   );
