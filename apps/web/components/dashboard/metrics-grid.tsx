@@ -1,22 +1,27 @@
-import { Ruler, Maximize, GitCommit, FileDiff } from 'lucide-react';
+import { Ruler, Maximize, Ratio, Scan } from 'lucide-react';
+import type { Metrics } from '@/lib/types';
 
-export function MetricsGrid() {
-  const metrics = [
-    { label: 'Body Width', value: '245 cm', icon: Ruler },
-    { label: 'Body Height', value: '142 cm', icon: Maximize },
-    { label: 'Contour Area', value: '3.2 m²', icon: FileDiff },
-    { label: 'Anchor Points', value: '18 mapped', icon: GitCommit },
+interface MetricsGridProps {
+  metrics: Metrics;
+}
+
+export function MetricsGrid({ metrics }: MetricsGridProps) {
+  const items = [
+    { label: 'Body Width', value: metrics.body_width.toFixed(1), icon: Ruler },
+    { label: 'Body Height', value: metrics.body_height.toFixed(1), icon: Maximize },
+    { label: 'Body Ratio', value: metrics.body_ratio.toFixed(3), icon: Ratio },
+    { label: 'Contour Area', value: metrics.contour_area.toFixed(1), icon: Scan },
   ];
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      {metrics.map((metric, index) => (
-        <div key={index} className="border bg-background p-4 flex flex-col gap-3">
+      {items.map((item) => (
+        <div key={item.label} className="border bg-background p-4 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <metric.icon className="h-4 w-4" />
-            <span className="text-xs font-medium uppercase tracking-wider">{metric.label}</span>
+            <item.icon className="h-4 w-4" />
+            <span className="text-xs font-medium uppercase tracking-wider">{item.label}</span>
           </div>
-          <span className="text-xl font-bold font-mono">{metric.value}</span>
+          <span className="text-xl font-bold font-mono">{item.value}</span>
         </div>
       ))}
     </div>

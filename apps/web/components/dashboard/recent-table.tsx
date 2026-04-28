@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -9,44 +12,38 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Image as ImageIcon } from 'lucide-react';
 
+interface Record {
+  id: number;
+  animal_type: string;
+  breed: string;
+  confidence: number;
+  breed_confidence: number;
+  score: string;
+  original_image_url: string | null;
+  processed_image_url: string | null;
+  created_at: string;
+}
+
 export function RecentTable() {
-  const records = [
-    {
-      id: 'REC-001',
-      type: 'Cattle (Holstein)',
-      confidence: 98.2,
-      score: 87,
-      date: '2026-05-21 14:22',
-    },
-    {
-      id: 'REC-002',
-      type: 'Buffalo (Murrah)',
-      confidence: 96.5,
-      score: 92,
-      date: '2026-05-21 13:45',
-    },
-    {
-      id: 'REC-003',
-      type: 'Cattle (Jersey)',
-      confidence: 99.1,
-      score: 84,
-      date: '2026-05-21 12:10',
-    },
-    {
-      id: 'REC-004',
-      type: 'Cattle (Angus)',
-      confidence: 94.8,
-      score: 78,
-      date: '2026-05-21 09:30',
-    },
-    {
-      id: 'REC-005',
-      type: 'Buffalo (Nili-Ravi)',
-      confidence: 97.4,
-      score: 89,
-      date: '2026-05-20 18:15',
-    },
-  ];
+  const [records, setRecords] = useState<Record[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchRecords() {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/records/`);
+        if (res.ok) {
+          const data = await res.json();
+          setRecords(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch records:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRecords();
+  }, []);
 
   return (
     <div className="border bg-card">
@@ -65,27 +62,52 @@ export function RecentTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {records.map((record) => (
-            <TableRow key={record.id}>
-              <TableCell>
-                <div className="h-10 w-16 bg-muted border flex items-center justify-center">
-                  <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </TableCell>
-              <TableCell className="font-medium">{record.type}</TableCell>
-              <TableCell>
-                <Badge variant="outline" className="font-mono">
-                  {record.confidence}%
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <span className="font-bold text-primary">{record.score}</span>
-              </TableCell>
-              <TableCell className="text-right text-muted-foreground font-mono text-sm">
-                {record.date}
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                Loading records...
               </TableCell>
             </TableRow>
-          ))}
+          ) : records.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                No recent records found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            records.map((record) => (
+              <TableRow key={record.id}>
+                <TableCell>
+                  <div className="h-10 w-16 bg-muted border flex items-center justify-center overflow-hidden relative">
+                    {record.processed_image_url || record.original_image_url ? (
+                      <img 
+                        src={record.processed_image_url || record.original_image_url!} 
+                        alt="Preview" 
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">
+                  {record.animal_type.charAt(0).toUpperCase() + record.animal_type.slice(1)} 
+                  {record.breed && record.breed !== 'Unknown' && ` (${record.breed})`}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className="font-mono">
+                    {Math.round(record.confidence * 100)}%
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <span className="font-bold text-primary">{record.score}</span>
+                </TableCell>
+                <TableCell className="text-right text-muted-foreground font-mono text-sm">
+                  {new Date(record.created_at).toLocaleString()}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

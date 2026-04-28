@@ -11,6 +11,8 @@ class ClassificationResult(Base):
     user_id = Column(Integer, nullable=True, index=True)
     
     animal_type = Column(String, index=True)
+    breed = Column(String, index=True)
+    breed_confidence = Column(Float)
     confidence = Column(Float)
     score = Column(String, index=True)
     
@@ -20,7 +22,7 @@ class ClassificationResult(Base):
     body_ratio = Column(Float)
     contour_area = Column(Float)
     
-    # File references
-    image_path = Column(String)
+    original_image_key = Column(String)
+    processed_image_key = Column(String)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())

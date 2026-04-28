@@ -1,24 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { UploadZone } from '@/components/dashboard/upload-zone';
 import { AnalysisResult } from '@/components/dashboard/analysis-result';
-import { Loader2 } from 'lucide-react';
+import { useAnalysis } from '@/hooks/use-analysis';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function AnalyzePage() {
-  const [status, setStatus] = useState<'idle' | 'analyzing' | 'complete'>('idle');
-
-  const handleAnalyze = () => {
-    setStatus('analyzing');
-    // Simulate AI inference delay
-    setTimeout(() => {
-      setStatus('complete');
-    }, 2000);
-  };
-
-  const handleReset = () => {
-    setStatus('idle');
-  };
+  const { analyze, data, error, isPending, reset } = useAnalysis();
 
   return (
     <div className="p-6 md:p-10 space-y-8 max-w-6xl mx-auto">
@@ -30,9 +18,22 @@ export default function AnalyzePage() {
       </div>
 
       <div className="mt-8">
-        {status === 'idle' && <UploadZone onAnalyze={handleAnalyze} />}
+        {!data && !isPending && (
+          <>
+            {error && (
+              <div className="border border-destructive bg-destructive/5 p-4 mb-6 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-destructive">Inference Failed</p>
+                  <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
+                </div>
+              </div>
+            )}
+            <UploadZone onAnalyze={analyze} disabled={isPending} />
+          </>
+        )}
 
-        {status === 'analyzing' && (
+        {isPending && (
           <div className="border bg-card p-24 flex flex-col items-center justify-center space-y-6 text-center">
             <Loader2 className="h-12 w-12 text-primary animate-spin" />
             <div className="space-y-2">
@@ -44,7 +45,7 @@ export default function AnalyzePage() {
           </div>
         )}
 
-        {status === 'complete' && <AnalysisResult onReset={handleReset} />}
+        {data && <AnalysisResult data={data} onReset={reset} />}
       </div>
     </div>
   );
