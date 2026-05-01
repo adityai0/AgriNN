@@ -52,24 +52,36 @@ export function AnalysisResult({ data, onReset }: AnalysisResultProps) {
           <div className="border bg-card p-6">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold mb-1 capitalize">{data.animal_type}</h3>
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  {data.confidence >= 0.8 ? (
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-xl font-bold mb-1 capitalize">
+                  {data.animal_type} 
+                  {data.breed && data.breed !== 'Unknown' && <span className="text-muted-foreground ml-2">({data.breed})</span>}
+                </h3>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm text-muted-foreground flex items-center gap-2">
+                    {data.confidence >= 0.8 ? (
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    {data.confidence >= 0.8 ? 'High Confidence' : 'Low Confidence'}
+                  </p>
+                  {data.grade && (
+                    <span className="px-2 py-0.5 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground">
+                      {data.grade}
+                    </span>
                   )}
-                  {data.confidence >= 0.8 ? 'High Confidence Match' : 'Low Confidence Match'}
-                </p>
+                </div>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-3xl font-bold text-primary font-mono">{data.score}</span>
-                <span className="text-xs text-muted-foreground font-semibold tracking-wider uppercase">
+                <span className="text-4xl font-black text-primary font-mono leading-none tracking-tighter">
+                  {data.composite_score !== undefined ? data.composite_score : data.score}
+                </span>
+                <span className="text-xs text-muted-foreground font-semibold tracking-widest uppercase mt-1">
                   ATC Score
                 </span>
               </div>
             </div>
-            <MetricsGrid metrics={data.metrics} />
+            {data.traits ? <MetricsGrid metrics={data.metrics} traits={data.traits} /> : <MetricsGrid metrics={data.metrics} />}
           </div>
 
           <div className="border bg-card p-6 flex-1">

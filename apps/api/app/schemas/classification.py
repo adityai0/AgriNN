@@ -1,6 +1,16 @@
 from pydantic import BaseModel
 from typing import Optional
 
+class Traits(BaseModel):
+    stature: int
+    body_length: int
+    chest_width: int
+    body_depth: int
+    rump_width: int
+    rump_angle: int
+    angularity: int
+    dairy_strength: int
+
 class Metrics(BaseModel):
     body_width: float
     body_height: float
@@ -13,6 +23,9 @@ class ClassificationResponse(BaseModel):
     breed: str
     breed_confidence: float
     confidence: float
+    traits: Traits
+    composite_score: int
+    grade: str
     metrics: Metrics
     score: str
     original_image_url: Optional[str] = None

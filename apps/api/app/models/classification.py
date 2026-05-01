@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, JSON
 from sqlalchemy.sql import func
 from app.db.base import Base
 
@@ -21,6 +21,11 @@ class ClassificationResult(Base):
     body_height = Column(Float)
     body_ratio = Column(Float)
     contour_area = Column(Float)
+    
+    # Advanced Morphology
+    traits = Column(JSON)
+    composite_score = Column(Integer)
+    grade = Column(String)
     
     original_image_key = Column(String)
     processed_image_key = Column(String)

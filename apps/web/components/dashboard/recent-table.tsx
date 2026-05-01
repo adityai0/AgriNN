@@ -19,6 +19,8 @@ interface Record {
   confidence: number;
   breed_confidence: number;
   score: string;
+  composite_score?: number;
+  grade?: string;
   original_image_url: string | null;
   processed_image_url: string | null;
   created_at: string;
@@ -58,6 +60,7 @@ export function RecentTable() {
             <TableHead>Animal Type</TableHead>
             <TableHead>Confidence</TableHead>
             <TableHead>ATC Score</TableHead>
+            <TableHead>Grade</TableHead>
             <TableHead className="text-right">Date</TableHead>
           </TableRow>
         </TableHeader>
@@ -100,7 +103,16 @@ export function RecentTable() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <span className="font-bold text-primary">{record.score}</span>
+                  <span className="font-bold text-primary text-lg">
+                    {record.composite_score !== undefined ? record.composite_score : record.score}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  {record.grade && (
+                    <Badge variant={record.grade === 'Excellent' || record.grade === 'Very Good' ? 'default' : 'secondary'} className="font-semibold uppercase tracking-wider">
+                      {record.grade}
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground font-mono text-sm">
                   {new Date(record.created_at).toLocaleString()}

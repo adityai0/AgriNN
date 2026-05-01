@@ -31,6 +31,9 @@ def run_inference(image_path: str) -> dict:
                 "breed": "Unknown",
                 "breed_confidence": 0.0,
                 "confidence": 0.0,
+                "traits": {},
+                "composite_score": 0,
+                "grade": "N/A",
                 "metrics": {},
                 "score": "N/A"
             }
@@ -41,13 +44,14 @@ def run_inference(image_path: str) -> dict:
         if animal_type == "unknown":
             animal_type = yolo_animal_type  # fallback to YOLO if breed failed
 
-        # 4. Calculate metrics & get score
+        # 4. Calculate metrics, evaluate traits & get score
         metrics = analyzer.calculate_metrics(mask, bbox, img.shape)
-        score = analyzer.determine_score(metrics)
+        traits = analyzer.evaluate_traits(metrics)
+        composite_score, grade = analyzer.compute_composite_score(traits)
         
         # 5. Save visualization
         filename = f"out_{os.path.basename(image_path)}"
-        result_img = draw_results(img, bbox, mask, animal_type, score)
+        result_img = draw_results(img, bbox, mask, animal_type, str(composite_score))
         save_path = save_image(result_img, filename)
         
         # 6. Return structured response
@@ -56,8 +60,11 @@ def run_inference(image_path: str) -> dict:
             "breed": breed_results.get("breed", "Unknown"),
             "breed_confidence": breed_results.get("breed_confidence", 0.0),
             "confidence": round(confidence, 2),
+            "traits": traits,
+            "composite_score": composite_score,
+            "grade": grade,
             "metrics": metrics,
-            "score": score,
+            "score": str(composite_score),
             "saved_image_path": save_path
         }
 
@@ -68,6 +75,9 @@ def run_inference(image_path: str) -> dict:
             "breed": "Unknown",
             "breed_confidence": 0.0,
             "confidence": 0.0,
+            "traits": {},
+            "composite_score": 0,
+            "grade": "N/A",
             "metrics": {},
             "score": "N/A"
         }

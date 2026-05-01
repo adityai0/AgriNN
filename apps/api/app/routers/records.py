@@ -20,6 +20,9 @@ def get_recent_records(limit: int = 50, db: Session = Depends(get_db)):
             "breed_confidence": record.breed_confidence,
             "confidence": record.confidence,
             "score": record.score,
+            "composite_score": record.composite_score,
+            "grade": record.grade,
+            "traits": record.traits,
             "original_image_url": generate_presigned_url(record.original_image_key) if record.original_image_key else None,
             "processed_image_url": generate_presigned_url(record.processed_image_key) if record.processed_image_key else None,
             "created_at": record.created_at

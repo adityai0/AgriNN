@@ -27,6 +27,12 @@ async def process_image_classification(file: UploadFile, db: Session, user_id: i
             "animal_type": "unknown",
             "confidence": 0.0,
             "metrics": {"body_width": 0.0, "body_height": 0.0, "body_ratio": 0.0, "contour_area": 0.0},
+            "traits": {
+                "stature": 0, "body_length": 0, "chest_width": 0, "body_depth": 0,
+                "rump_width": 0, "rump_angle": 0, "angularity": 0, "dairy_strength": 0
+            },
+            "composite_score": 0,
+            "grade": "N/A",
             "score": "N/A",
             "error": f"Failed to upload to S3: {str(e)}",
         }
@@ -44,6 +50,12 @@ async def process_image_classification(file: UploadFile, db: Session, user_id: i
             "breed_confidence": 0.0,
             "confidence": 0.0,
             "metrics": {"body_width": 0.0, "body_height": 0.0, "body_ratio": 0.0, "contour_area": 0.0},
+            "traits": {
+                "stature": 0, "body_length": 0, "chest_width": 0, "body_depth": 0,
+                "rump_width": 0, "rump_angle": 0, "angularity": 0, "dairy_strength": 0
+            },
+            "composite_score": 0,
+            "grade": "N/A",
             "score": "N/A",
             "original_image_url": generate_presigned_url(original_image_key),
             "error": inference_result["error"],
@@ -64,6 +76,10 @@ async def process_image_classification(file: UploadFile, db: Session, user_id: i
     body_height = metrics_data.get("body_height", 0.0)
     body_ratio = metrics_data.get("body_ratio", 0.0)
     contour_area = metrics_data.get("contour_area", 0.0)
+    
+    traits = inference_result.get("traits", {})
+    composite_score = inference_result.get("composite_score", 0)
+    grade = inference_result.get("grade", "N/A")
 
     db_record = ClassificationResult(
         user_id=user_id,
@@ -76,6 +92,9 @@ async def process_image_classification(file: UploadFile, db: Session, user_id: i
         body_height=body_height,
         body_ratio=body_ratio,
         contour_area=contour_area,
+        traits=traits,
+        composite_score=composite_score,
+        grade=grade,
         original_image_key=original_image_key,
         processed_image_key=processed_image_key,
     )
@@ -96,6 +115,9 @@ async def process_image_classification(file: UploadFile, db: Session, user_id: i
             "body_ratio": body_ratio,
             "contour_area": contour_area,
         },
+        "traits": traits,
+        "composite_score": composite_score,
+        "grade": grade,
         "score": inference_result["score"],
         "original_image_url": generate_presigned_url(original_image_key),
         "processed_image_url": generate_presigned_url(processed_image_key),

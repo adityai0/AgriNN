@@ -42,7 +42,7 @@ def train():
     for epoch in range(epochs):
         model.train()
         running_loss = 0.0
-        for inputs, labels in train_loader:
+        for i, (inputs, labels) in enumerate(train_loader):
             inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
             outputs = model(inputs)
@@ -50,6 +50,9 @@ def train():
             loss.backward()
             optimizer.step()
             running_loss += loss.item()
+            
+            if (i + 1) % 10 == 0:
+                print(f"  [Train] Epoch {epoch+1} | Batch {i+1}/{len(train_loader)} | Loss: {loss.item():.4f}")
             
         model.eval()
         correct = 0
