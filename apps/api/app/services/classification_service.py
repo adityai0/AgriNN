@@ -104,6 +104,7 @@ async def process_image_classification(file: UploadFile, db: Session, user_id: i
     db.refresh(db_record)
 
     return {
+        "id": getattr(db_record, "id", None),
         "success": True,
         "animal_type": inference_result["animal_type"],
         "breed": inference_result.get("breed", "Unknown"),

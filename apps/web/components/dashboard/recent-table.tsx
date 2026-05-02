@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -11,41 +11,16 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Image as ImageIcon } from 'lucide-react';
-
-interface Record {
-  id: number;
-  animal_type: string;
-  breed: string;
-  confidence: number;
-  breed_confidence: number;
-  score: string;
-  composite_score?: number;
-  grade?: string;
-  original_image_url: string | null;
-  processed_image_url: string | null;
-  created_at: string;
-}
+import { useRecentRecords } from '@/hooks/use-records';
+import { TableSkeleton } from '@/components/dashboard/skeletons/table-skeleton';
 
 export function RecentTable() {
-  const [records, setRecords] = useState<Record[]>([]);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { data: records, isLoading } = useRecentRecords();
 
-  useEffect(() => {
-    async function fetchRecords() {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/records/`);
-        if (res.ok) {
-          const data = await res.json();
-          setRecords(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch records:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchRecords();
-  }, []);
+  if (isLoading) {
+    return <TableSkeleton />;
+  }
 
   return (
     <div className="border bg-card">
@@ -65,21 +40,19 @@ export function RecentTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {loading ? (
+          {!records || records.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                Loading records...
-              </TableCell>
-            </TableRow>
-          ) : records.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+              <TableCell colSpan={6} className="text-center py-12 text-muted-foreground font-mono text-sm">
                 No recent records found.
               </TableCell>
             </TableRow>
           ) : (
             records.map((record) => (
-              <TableRow key={record.id}>
+              <TableRow 
+                key={record.id} 
+                onClick={() => router.push(`/dashboard/records/${record.id}`)}
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              >
                 <TableCell>
                   <div className="h-10 w-16 bg-muted border flex items-center justify-center overflow-hidden relative">
                     {record.processed_image_url || record.original_image_url ? (
@@ -115,7 +88,7 @@ export function RecentTable() {
                   )}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground font-mono text-sm">
-                  {new Date(record.created_at).toLocaleString()}
+                  {new Date(record.created_at || '').toLocaleString()}
                 </TableCell>
               </TableRow>
             ))

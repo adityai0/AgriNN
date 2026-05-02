@@ -4,6 +4,7 @@ import { StatCard } from '@/components/dashboard/stat-card';
 import { RecentTable } from '@/components/dashboard/recent-table';
 import { Activity, Target, ScanLine, Database } from 'lucide-react';
 import { useDashboardStats } from '@/hooks/use-dashboard';
+import { StatsSkeleton } from '@/components/dashboard/skeletons/stats-skeleton';
 
 export default function DashboardOverview() {
   const { stats, loading, error } = useDashboardStats();
@@ -18,30 +19,41 @@ export default function DashboardOverview() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Analyses"
-          value={loading ? "..." : (stats?.total_analyses.toLocaleString() || "0")}
-          description={error ? "Failed to load" : "Processed via API"}
-          icon={Database}
-        />
-        <StatCard
-          title="Avg. Confidence"
-          value={loading ? "..." : `${((stats?.average_confidence || 0) * 100).toFixed(1)}%`}
-          description={error ? "Failed to load" : "MobileNetv2 + YOLO26 inference"}
-          icon={Target}
-        />
-        <StatCard
-          title="Cattle Processed"
-          value={loading ? "..." : (stats?.cattle_processed.toLocaleString() || "0")}
-          description={error ? "Failed to load" : "Cattle subset"}
-          icon={ScanLine}
-        />
-        <StatCard
-          title="Buffaloes Processed"
-          value={loading ? "..." : (stats?.buffalo_processed.toLocaleString() || "0")}
-          description={error ? "Failed to load" : "Buffalo subset"}
-          icon={Activity}
-        />
+        {loading ? (
+          <>
+            <StatsSkeleton />
+            <StatsSkeleton />
+            <StatsSkeleton />
+            <StatsSkeleton />
+          </>
+        ) : (
+          <>
+            <StatCard
+              title="Total Analyses"
+              value={stats?.total_analyses.toLocaleString() || "0"}
+              description={error ? "Failed to load" : "Processed via API"}
+              icon={Database}
+            />
+            <StatCard
+              title="Avg. Confidence"
+              value={`${((stats?.average_confidence || 0) * 100).toFixed(1)}%`}
+              description={error ? "Failed to load" : "MobileNetv2 + YOLO26 inference"}
+              icon={Target}
+            />
+            <StatCard
+              title="Cattle Processed"
+              value={stats?.cattle_processed.toLocaleString() || "0"}
+              description={error ? "Failed to load" : "Cattle subset"}
+              icon={ScanLine}
+            />
+            <StatCard
+              title="Buffaloes Processed"
+              value={stats?.buffalo_processed.toLocaleString() || "0"}
+              description={error ? "Failed to load" : "Buffalo subset"}
+              icon={Activity}
+            />
+          </>
+        )}
       </div>
 
       <div className="pt-4">

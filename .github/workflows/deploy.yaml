@@ -1,0 +1,112 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Build Standalone Frontend
+        run: npm run build --workspace=apps/web
+
+      - name: Prepare Frontend Artifact
+        run: |
+          mkdir -p frontend_bundle
+          cp -r apps/web/.next/standalone/* frontend_bundle/
+          mkdir -p frontend_bundle/apps/web/public
+          cp -r apps/web/public/* frontend_bundle/apps/web/public/ || true
+          mkdir -p frontend_bundle/apps/web/.next/static
+          cp -r apps/web/.next/static/* frontend_bundle/apps/web/.next/static/ || true
+          tar -czf frontend.tar.gz -C frontend_bundle .
+
+      - name: Prepare Backend Artifact
+        run: |
+          tar -czf backend.tar.gz apps/api ai --exclude='node_modules' --exclude='.next' --exclude='venv' --exclude='__pycache__'
+
+      - name: Copy Artifacts to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "frontend.tar.gz,backend.tar.gz"
+          target: "/tmp"
+
+      - name: Deploy and Restart Services
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            sudo mkdir -p /var/www/agrinn
+            sudo chown -R $USER:$USER /var/www/agrinn
+
+            # Deploy Frontend
+            mkdir -p /var/www/agrinn/frontend
+            tar -xzf /tmp/frontend.tar.gz -C /var/www/agrinn/frontend
+
+            # Deploy Backend
+            tar -xzf /tmp/backend.tar.gz -C /var/www/agrinn/
+            rm -rf /var/www/agrinn/backend
+            mv /var/www/agrinn/apps/api /var/www/agrinn/backend
+            rm -rf /var/www/agrinn/apps
+
+            rm /tmp/frontend.tar.gz /tmp/backend.tar.gz
+
+            # Setup Backend Dependencies
+            cd /var/www/agrinn/backend
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+            pip install -r requirements.txt
+
+            # Restart Frontend PM2 Process
+            cd /var/www/agrinn/frontend/apps/web
+            pm2 describe agrinn-web > /dev/null
+            if [ $? -eq 0 ]; then
+              PORT=3000 pm2 reload agrinn-web
+            else
+              PORT=3000 pm2 start server.js --name agrinn-web
+            fi
+            pm2 save
+
+            # Restart Backend Systemd Service
+            if [ ! -f /etc/systemd/system/agrinn-api.service ]; then
+              sudo bash -c "cat > /etc/systemd/system/agrinn-api.service << 'EOF'
+            [Unit]
+            Description=AgriNN FastAPI Backend
+            After=network.target
+
+            [Service]
+            User=$USER
+            WorkingDirectory=/var/www/agrinn/backend
+            Environment=\"PATH=/var/www/agrinn/backend/venv/bin\"
+            ExecStart=/var/www/agrinn/backend/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+            Restart=always
+
+            [Install]
+            WantedBy=multi-user.target
+            EOF"
+              sudo systemctl daemon-reload
+              sudo systemctl enable agrinn-api
+            fi
+            sudo systemctl restart agrinn-api

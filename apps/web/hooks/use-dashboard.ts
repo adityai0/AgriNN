@@ -1,50 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { DashboardStats, DashboardAnalytics } from '@/lib/types';
 
 export function useDashboardStats() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const query = useQuery<DashboardStats, Error>({
+    queryKey: ['dashboard', 'stats'],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/stats`);
+      if (!res.ok) throw new Error('Failed to fetch dashboard stats');
+      return res.json();
+    },
+  });
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/stats`);
-        if (!res.ok) throw new Error('Failed to fetch dashboard stats');
-        const data = await res.json();
-        setStats(data);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Unknown error'));
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchStats();
-  }, []);
-
-  return { stats, loading, error };
+  return {
+    stats: query.data,
+    loading: query.isLoading,
+    error: query.error,
+  };
 }
 
 export function useDashboardAnalytics() {
-  const [analytics, setAnalytics] = useState<DashboardAnalytics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const query = useQuery<DashboardAnalytics, Error>({
+    queryKey: ['dashboard', 'analytics'],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/analytics`);
+      if (!res.ok) throw new Error('Failed to fetch dashboard analytics');
+      return res.json();
+    },
+  });
 
-  useEffect(() => {
-    async function fetchAnalytics() {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/analytics`);
-        if (!res.ok) throw new Error('Failed to fetch dashboard analytics');
-        const data = await res.json();
-        setAnalytics(data);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Unknown error'));
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchAnalytics();
-  }, []);
-
-  return { analytics, loading, error };
+  return {
+    analytics: query.data,
+    loading: query.isLoading,
+    error: query.error,
+  };
 }

@@ -17,8 +17,10 @@ export interface Metrics {
 }
 
 export interface ClassificationResponse {
+  id: string;
   success: boolean;
   animal_type: string;
+  created_at?: string;
   breed?: string;
   breed_confidence?: number;
   confidence: number;

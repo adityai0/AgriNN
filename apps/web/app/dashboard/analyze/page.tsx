@@ -1,12 +1,11 @@
 'use client';
 
 import { UploadZone } from '@/components/dashboard/upload-zone';
-import { AnalysisResult } from '@/components/dashboard/analysis-result';
 import { useAnalysis } from '@/hooks/use-analysis';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function AnalyzePage() {
-  const { analyze, data, error, isPending, reset } = useAnalysis();
+  const { analyze, error, isPending } = useAnalysis();
 
   return (
     <div className="p-6 md:p-10 space-y-8 max-w-6xl mx-auto">
@@ -18,7 +17,7 @@ export default function AnalyzePage() {
       </div>
 
       <div className="mt-8">
-        {!data && !isPending && (
+        {!isPending && (
           <>
             {error && (
               <div className="border border-destructive bg-destructive/5 p-4 mb-6 flex items-start gap-3">
@@ -44,8 +43,6 @@ export default function AnalyzePage() {
             </div>
           </div>
         )}
-
-        {data && <AnalysisResult data={data} onReset={reset} />}
       </div>
     </div>
   );

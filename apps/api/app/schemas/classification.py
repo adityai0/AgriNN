@@ -18,6 +18,7 @@ class Metrics(BaseModel):
     contour_area: float
 
 class ClassificationResponse(BaseModel):
+    id: str = None
     success: bool
     animal_type: str
     breed: str

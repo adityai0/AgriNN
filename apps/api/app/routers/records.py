@@ -29,3 +29,26 @@ def get_recent_records(limit: int = 50, db: Session = Depends(get_db)):
         })
         
     return response
+
+@router.get("/{record_id}")
+def get_record(record_id: str, db: Session = Depends(get_db)):
+    from fastapi import HTTPException
+    
+    record = db.query(ClassificationResult).filter(ClassificationResult.id == record_id).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Record not found")
+        
+    return {
+        "id": record.id,
+        "animal_type": record.animal_type,
+        "breed": record.breed,
+        "breed_confidence": record.breed_confidence,
+        "confidence": record.confidence,
+        "score": record.score,
+        "composite_score": record.composite_score,
+        "grade": record.grade,
+        "traits": record.traits,
+        "original_image_url": generate_presigned_url(record.original_image_key) if record.original_image_key else None,
+        "processed_image_url": generate_presigned_url(record.processed_image_key) if record.processed_image_key else None,
+        "created_at": record.created_at
+    }

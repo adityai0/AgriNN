@@ -1,3 +1,4 @@
+import uuid
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, JSON
 from sqlalchemy.sql import func
 from app.db.base import Base
@@ -5,7 +6,7 @@ from app.db.base import Base
 class ClassificationResult(Base):
     __tablename__ = "classification_results"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     
     # User relationship for future scalability (nullable for now)
     user_id = Column(Integer, nullable=True, index=True)

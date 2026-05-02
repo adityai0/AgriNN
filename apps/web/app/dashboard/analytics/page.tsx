@@ -2,7 +2,8 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useDashboardAnalytics } from '@/hooks/use-dashboard';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { ChartSkeleton } from '@/components/dashboard/skeletons/chart-skeleton';
 
 export default function AnalyticsPage() {
   const { analytics, loading, error } = useDashboardAnalytics();
@@ -17,9 +18,9 @@ export default function AnalyticsPage() {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center p-24 space-y-4">
-          <Loader2 className="h-8 w-8 text-primary animate-spin" />
-          <p className="text-sm text-muted-foreground font-mono">Loading telemetry...</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ChartSkeleton />
+          <ChartSkeleton />
         </div>
       ) : error ? (
         <div className="border border-destructive bg-destructive/5 p-6 flex items-start gap-4">
