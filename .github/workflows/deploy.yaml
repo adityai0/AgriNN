@@ -26,17 +26,23 @@ jobs:
 
       - name: Prepare Frontend Artifact
         run: |
-          mkdir -p frontend_bundle
+          mkdir -p frontend_bundle/apps/web
           cp -r apps/web/.next/standalone/* frontend_bundle/
-          mkdir -p frontend_bundle/apps/web/public
-          cp -r apps/web/public/* frontend_bundle/apps/web/public/ || true
-          mkdir -p frontend_bundle/apps/web/.next/static
-          cp -r apps/web/.next/static/* frontend_bundle/apps/web/.next/static/ || true
+          if [ -d "apps/web/public" ]; then
+            cp -r apps/web/public frontend_bundle/apps/web/
+          fi
+          if [ -d "apps/web/.next/static" ]; then
+            mkdir -p frontend_bundle/apps/web/.next
+            cp -r apps/web/.next/static frontend_bundle/apps/web/.next/
+          fi
           tar -czf frontend.tar.gz -C frontend_bundle .
 
       - name: Prepare Backend Artifact
         run: |
-          tar -czf backend.tar.gz apps/api ai --exclude='node_modules' --exclude='.next' --exclude='venv' --exclude='__pycache__'
+          mkdir -p backend_bundle/backend
+          cp -r apps/api/* backend_bundle/backend/
+          cp -r ai backend_bundle/
+          tar -czf backend.tar.gz -C backend_bundle --exclude='node_modules' --exclude='.next' --exclude='venv' --exclude='__pycache__' .
 
       - name: Copy Artifacts to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -56,18 +62,15 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            sudo mkdir -p /var/www/agrinn
+            sudo mkdir -p /var/www/agrinn/frontend
+            sudo mkdir -p /var/www/agrinn/backend
             sudo chown -R $USER:$USER /var/www/agrinn
 
             # Deploy Frontend
-            mkdir -p /var/www/agrinn/frontend
             tar -xzf /tmp/frontend.tar.gz -C /var/www/agrinn/frontend
 
-            # Deploy Backend
+            # Deploy Backend safely without deleting venv/models
             tar -xzf /tmp/backend.tar.gz -C /var/www/agrinn/
-            rm -rf /var/www/agrinn/backend
-            mv /var/www/agrinn/apps/api /var/www/agrinn/backend
-            rm -rf /var/www/agrinn/apps
 
             rm /tmp/frontend.tar.gz /tmp/backend.tar.gz
 
@@ -80,13 +83,8 @@ jobs:
             pip install -r requirements.txt
 
             # Restart Frontend PM2 Process
-            cd /var/www/agrinn/frontend/apps/web
-            pm2 describe agrinn-web > /dev/null
-            if [ $? -eq 0 ]; then
-              PORT=3000 pm2 reload agrinn-web
-            else
-              PORT=3000 pm2 start server.js --name agrinn-web
-            fi
+            cd /var/www/agrinn/frontend
+            PORT=3000 pm2 reload agrinn-web || PORT=3000 pm2 start server.js --name agrinn-web
             pm2 save
 
             # Restart Backend Systemd Service
