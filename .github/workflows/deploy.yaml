@@ -35,6 +35,12 @@ jobs:
             mkdir -p frontend_bundle/apps/web/.next
             cp -r apps/web/.next/static frontend_bundle/apps/web/.next/
           fi
+          if [ -f "frontend_bundle/apps/web/server.js" ]; then
+            mv frontend_bundle/apps/web/server.js frontend_bundle/
+          fi
+          if [ -f "frontend_bundle/apps/web/package.json" ]; then
+            mv frontend_bundle/apps/web/package.json frontend_bundle/
+          fi
           tar -czf frontend.tar.gz -C frontend_bundle .
 
       - name: Prepare Backend Artifact
@@ -67,6 +73,7 @@ jobs:
             sudo chown -R $USER:$USER /var/www/agrinn
 
             # Deploy Frontend
+            rm -rf /var/www/agrinn/frontend/*
             tar -xzf /tmp/frontend.tar.gz -C /var/www/agrinn/frontend
 
             # Deploy Backend safely without deleting venv/models
