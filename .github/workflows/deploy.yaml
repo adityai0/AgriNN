@@ -26,21 +26,18 @@ jobs:
 
       - name: Prepare Frontend Artifact
         run: |
-          mkdir -p frontend_bundle/apps/web
+          mkdir -p frontend_bundle
+
           cp -r apps/web/.next/standalone/* frontend_bundle/
+
+          cp -r apps/web/.next/static frontend_bundle/.next/
+
+          cp apps/web/.next/BUILD_ID frontend_bundle/.next/
+
           if [ -d "apps/web/public" ]; then
-            cp -r apps/web/public frontend_bundle/apps/web/
+            cp -r apps/web/public frontend_bundle/
           fi
-          if [ -d "apps/web/.next/static" ]; then
-            mkdir -p frontend_bundle/apps/web/.next
-            cp -r apps/web/.next/static frontend_bundle/apps/web/.next/
-          fi
-          if [ -f "frontend_bundle/apps/web/server.js" ]; then
-            mv frontend_bundle/apps/web/server.js frontend_bundle/
-          fi
-          if [ -f "frontend_bundle/apps/web/package.json" ]; then
-            mv frontend_bundle/apps/web/package.json frontend_bundle/
-          fi
+
           tar -czf frontend.tar.gz -C frontend_bundle .
 
       - name: Prepare Backend Artifact
