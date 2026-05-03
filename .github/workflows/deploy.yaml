@@ -28,17 +28,12 @@ jobs:
         run: |
           mkdir -p frontend_bundle
 
-          cp -r apps/web/.next/standalone/apps/web/* frontend_bundle/
+          cp -r apps/web/.next/standalone/* frontend_bundle/
 
-          mkdir -p frontend_bundle/.next
-          cp -r apps/web/.next/static frontend_bundle/.next/
-
-          cp -r apps/web/.next/server frontend_bundle/.next/
-
-          cp apps/web/.next/BUILD_ID frontend_bundle/.next/
+          cp -r apps/web/.next/static frontend_bundle/apps/web/.next/
 
           if [ -d "apps/web/public" ]; then
-            cp -r apps/web/public frontend_bundle/
+            cp -r apps/web/public frontend_bundle/apps/web/
           fi
 
           tar -czf frontend.tar.gz -C frontend_bundle .
