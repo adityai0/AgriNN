@@ -10,35 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Archive Repository
-        run: |
-          tar \
-            --warning=no-file-changed \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='.next' \
-            --exclude='venv' \
-            --exclude='__pycache__' \
-            --exclude='dataset' \
-            --exclude='.pm2' \
-            --exclude='*.log' \
-            -czf deploy.tar.gz .
-
-      - name: Copy Archive to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          source: "deploy.tar.gz"
-          target: "/tmp"
-
       - name: Deploy and Restart Services
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -47,11 +18,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            mkdir -p ~/agrinn
-            
-            # Extract over existing repository safely (preserves venv/models)
-            tar -xzf /tmp/deploy.tar.gz -C ~/agrinn/
-            rm /tmp/deploy.tar.gz
+            # Pull latest changes natively via Git
+            if [ -d "$HOME/agrinn/.git" ]; then
+              cd ~/agrinn
+              git fetch origin
+              git reset --hard origin/main
+              git lfs pull
+            else
+              cd ~
+              git clone https://github.com/adityai0/AgriNN.git agrinn
+              cd agrinn
+              git lfs pull
+            fi
 
             # Build Frontend natively on EC2
             cd ~/agrinn/apps/web
