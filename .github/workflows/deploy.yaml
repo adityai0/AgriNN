@@ -13,46 +13,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Frontend Dependencies
-        run: npm ci
-
-      - name: Build Standalone Frontend
-        run: npm run build --workspace=apps/web
-
-      - name: Prepare Frontend Artifact
+      - name: Archive Repository
         run: |
-          mkdir -p frontend_bundle
+          tar -czf deploy.tar.gz \
+            --exclude='node_modules' \
+            --exclude='.next' \
+            --exclude='venv' \
+            --exclude='dataset' \
+            --exclude='__pycache__' \
+            --exclude='.git' \
+            --exclude='outputs' \
+            --exclude='.pytest_cache' \
+            --exclude='.mypy_cache' \
+            --exclude='.ruff_cache' \
+            .
 
-          cp -r apps/web/.next/standalone/* frontend_bundle/
-
-          cp -r apps/web/.next/static frontend_bundle/apps/web/.next/
-
-          if [ -d "apps/web/public" ]; then
-            cp -r apps/web/public frontend_bundle/apps/web/
-          fi
-
-          tar -czf frontend.tar.gz -C frontend_bundle .
-
-      - name: Prepare Backend Artifact
-        run: |
-          mkdir -p backend_bundle/backend
-          cp -r apps/api/* backend_bundle/backend/
-          cp -r ai backend_bundle/
-          tar -czf backend.tar.gz -C backend_bundle --exclude='node_modules' --exclude='.next' --exclude='venv' --exclude='__pycache__' .
-
-      - name: Copy Artifacts to EC2
+      - name: Copy Archive to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "frontend.tar.gz,backend.tar.gz"
+          source: "deploy.tar.gz"
           target: "/tmp"
 
       - name: Deploy and Restart Services
@@ -63,31 +46,29 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            sudo mkdir -p /var/www/agrinn/frontend
-            sudo mkdir -p /var/www/agrinn/backend
-            sudo chown -R $USER:$USER /var/www/agrinn
+            mkdir -p ~/agrinn
+            
+            # Extract over existing repository safely (preserves venv/models)
+            tar -xzf /tmp/deploy.tar.gz -C ~/agrinn/
+            rm /tmp/deploy.tar.gz
 
-            # Deploy Frontend
-            rm -rf /var/www/agrinn/frontend/*
-            tar -xzf /tmp/frontend.tar.gz -C /var/www/agrinn/frontend
+            # Build Frontend natively on EC2
+            cd ~/agrinn/apps/web
+            npm install
+            npm run build
 
-            # Deploy Backend safely without deleting venv/models
-            tar -xzf /tmp/backend.tar.gz -C /var/www/agrinn/
-
-            rm /tmp/frontend.tar.gz /tmp/backend.tar.gz
+            # Restart Frontend PM2
+            pm2 delete agrinn-web || true
+            PORT=3000 pm2 start npm --name agrinn-web -- start
+            pm2 save
 
             # Setup Backend Dependencies
-            cd /var/www/agrinn/backend
+            cd ~/agrinn/apps/api
             if [ ! -d "venv" ]; then
               python3 -m venv venv
             fi
             source venv/bin/activate
             pip install -r requirements.txt
-
-            # Restart Frontend PM2 Process
-            cd /var/www/agrinn/frontend
-            PORT=3000 pm2 reload agrinn-web || PORT=3000 pm2 start server.js --name agrinn-web
-            pm2 save
 
             # Restart Backend Systemd Service
             if [ ! -f /etc/systemd/system/agrinn-api.service ]; then
@@ -98,9 +79,9 @@ jobs:
 
             [Service]
             User=$USER
-            WorkingDirectory=/var/www/agrinn/backend
-            Environment=\"PATH=/var/www/agrinn/backend/venv/bin\"
-            ExecStart=/var/www/agrinn/backend/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+            WorkingDirectory=/home/$USER/agrinn/apps/api
+            Environment=\"PATH=/home/$USER/agrinn/apps/api/venv/bin\"
+            ExecStart=/home/$USER/agrinn/apps/api/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
             Restart=always
 
             [Install]
