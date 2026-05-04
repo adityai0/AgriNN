@@ -57,10 +57,10 @@ jobs:
             After=network.target
 
             [Service]
-            User=$USER
-            WorkingDirectory=/home/$USER/agrinn/apps/api
-            Environment=\"PATH=/home/$USER/agrinn/apps/api/venv/bin\"
-            ExecStart=/home/$USER/agrinn/apps/api/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+            User=ec2-user
+            WorkingDirectory=/home/ec2-user/agrinn/apps/api
+            Environment=\"PATH=/home/ec2-user/agrinn/apps/api/venv/bin\"
+            ExecStart=/home/ec2-user/agrinn/apps/api/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
             Restart=always
 
             [Install]
