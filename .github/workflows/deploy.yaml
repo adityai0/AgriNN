@@ -61,6 +61,7 @@ jobs:
             [Service]
             User=ec2-user
             WorkingDirectory=/home/ec2-user/agrinn/apps/api
+            EnvironmentFile=/home/ec2-user/app.env
             Environment=\"PATH=/home/ec2-user/agrinn/apps/api/venv/bin\" \"PYTHONPATH=/home/ec2-user/agrinn\"
             ExecStart=/home/ec2-user/agrinn/apps/api/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
             Restart=always
